@@ -9,6 +9,6 @@ WORKDIR /surepatch/build_scripts
 RUN bash build_ubuntu.sh
 WORKDIR /surepatch/dist
 # SUREPATCH COMMANDS
-RUN ./surepatch_deb --team=dima --user=ws.bespalov@gmail.com --password=Test123! --action=show_platforms
+RUN ./surepatch_deb --team=dima --user=ws.bespalov@gmail.com --password=Test123! --action=create_project --platfrom=docker_test --target=[pip,pip3] --file=[no,no]
 #
 CMD ["/bin/bash"]
