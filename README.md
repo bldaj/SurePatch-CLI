@@ -562,8 +562,8 @@ Doing action via ./surepatch command
    ```
 
 If you do not have a Dockerfile, then create it and write in it the commands written above.
+Save changes.
 
-If your Dockerfile is different, write in it the commands written above. Save changes.
 7. Create image via docker build command:
    ```sh
    docker build -t <image name> .
@@ -597,8 +597,8 @@ Doing action via python3 inside docker container
    ```
 
 If you do not have a Dockerfile, then create it and write in it the commands written above.
+Save changes.
 
-If your Dockerfile is different, write in it the commands written above. Save changes.
 7. Create image via docker build command:
    ```sh
    docker build -t <image name> .
@@ -616,16 +616,73 @@ If your Dockerfile is different, write in it the commands written above. Save ch
    exit
    ```
 ### Use CLI App with Jenkins
-1. Make sure that Docker is running
-2. Change permissions for docker.sock file:
+This example based on working in Linux Manjaro
+1. Install Jenkins from package manager Octopi:
+2. Make sure that Docker is running:
+   ```sh
+   systemctl status docker
+   ```
+   If Docker in not running, start it:
+   ```sh
+   sudo systemctl start docker
+   ```
+3. Change permissions for docker.sock:
    ```sh
    sudo chmod 777 /var/run/docker.sock
    ```
-3. Install Jenkins on your platform
-4. User account
-5. Create Job with pipeline:
+4. Make sure that Jenkins is running:
+   ```sh
+   systemctl status jenkins
+   ```
+   If Jenkins in not running, start it:
+   ```sh
+   sudo systemctl start jenkins
+   ```
+5. After installation, open a browser and connect to the following URL:
+   ```sh
+   http://localhost:8090
+   ```
+6. You will need to copy the initial password from the file system of the server:
+  ```sh
+  sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+  ```
+7. Copy password from output of command 'cat' and paste it in Jenkins in browser.
+8. Install suggested plugins.
+9. Create the first Administrator user and press Save and Finish.
+10. Create Dockerfile as following:
+   ```sh
+   FROM ubuntu
+   RUN apt-get update
+   RUN apt-get install -y python3 python3-pip
+   RUN pip3 install --upgrade pip
+   COPY . /surepatch
+   WORKDIR /surepatch
+   RUN pip3 install -r requirements.txt
+   WORKDIR /surepatch/build_scripts
+   RUN bash build_ubuntu.sh
+   WORKDIR /surepatch/dist
+   # SUREPATCH COMMANDS
+   RUN ./surepatch_deb --team=<your_team> --user=<your_user_email> --password=<your_password> --action=show_platforms
+   ```
+Save the Dockerfile in root of project.
 
-
+11. Now create Jenkinsfile with next commands and save it in root of project:
+   ```sh
+   pipeline {
+       agent { dockerfile true }
+       stages {
+           stage('Test') {
+               steps {
+                   echo "Complete work"
+               }
+           }
+       }
+   }
+   ```
+12. Go to Jenkins in browser and create job.
+13. Input name of job and choose Pipeline type and press OK.
+14. In section Pipeline in Definition select Pipeline script from SCM. In SCM field select git and specify Repository URL. After this press Save.
+15. Now press button Build Now from left . You will see new build in Build History where you can look at Console Output of build.
 # License
 ...
 # (c) BrainBankers, 2018.
