@@ -128,7 +128,7 @@ The executable file will be in /dist folder.
 ### Create local config file
 A local configuration file will be created in home directory (~/.surepatch.yaml).
 After that, the authorization information will be read from this file each time the action is started.
-You can change directly in file or with the help of save_config command. 
+You can change directly in file or with the help of save_config command.
 ```sh
 @ surepatch.py --action=save_config --team=testers --user=user@gmail.com --password=test_password --logo=off
 ```
@@ -173,13 +173,13 @@ And than:
 ```
 
 # Important notes:
-- If you do not explicitly specify the parameters, they will be set to the default values: 
+- If you do not explicitly specify the parameters, they will be set to the default values:
 
   --format=system and --method=auto, so you can use short command line notations.
-- You can use group definitions for targets and files to call one operation for different targets. 
+- You can use group definitions for targets and files to call one operation for different targets.
 
   For example:
-  
+
   This command will create project for OS, PIP, POM, GEM and Gemfile packages
 ```sh
 @ surepatch --action=create_project --platform=newtest --project=multitest2 --target=[os,pip,pom,gem,gemfile] --file=[no,no,/home/user/pom2.xml,no,/home/user/Gemfile]
@@ -191,7 +191,7 @@ And this command will create set for YARN, PIP3 and Gemfile.lock
 ```
 
 - With actions like show platforms, show projects, show cset and show issues you can use --file=<path> parameter to save the results into defined file.
-    
+
 For example:
 ```sh
 @ surepatch --action=show_issues --platform=newtest --project=settest --file=/home/user/issues_report.txt
@@ -246,7 +246,7 @@ If you want use pip3 packages - you should define pip3 target, like this:
 @ surepatch --action=create_project --platform=newtest --project=autotest_pip3_none --target=pip3 --method=auto --format=system
 ```
 ### Create Project from Python PIP Packages, pre-unloaded to an external file from shell command (pip freeze > file_path), for example /home/user/pip_freeze_packages.txt
-In this way, you can check security of your Python freeze files. Please, use command 
+In this way, you can check security of your Python freeze files. Please, use command
 ```sh
 @ pip freeze > file_path
 ```
@@ -347,7 +347,7 @@ Note, that CLI App use yarn.lock system format for those data.
 @ surepatch --action=create_project --platform=autotest2 --project=autotest_yarn --target=yarn --method=auto --format=system --file=/home/user/yarn.lock
 ```
 ### Create Project from User defined source file, for example /home/user/user_packages.txt, where packages defined as lines in <name>=<version> format
-Now, you can create some file and fill it with different packages and versions. 
+Now, you can create some file and fill it with different packages and versions.
 The type of package and its ownership does not matter.
 Note, that one package fill one line of file like this:
 name1=version1
@@ -449,7 +449,7 @@ And for pip3 packages:
 ```sh
 @ surepatch --action=create_set --platform=newtest --project=autotest_set_test --set=gem_gemfile_path.1 --target=gemfile --method=auto --format=system --file=/user/home/Gemfile
 ```
-### Create set from Ruby packages, collected from Gemfile.lock file, for example /home/user/Gemfile.lock 
+### Create set from Ruby packages, collected from Gemfile.lock file, for example /home/user/Gemfile.lock
 ```sh
 @ surepatch --action=create_set --platform=newtest --project=autotest_set_test --set=gem_gemfile_lock_path.1 --target=gemfile_lock --method=auto --format=system --file=/home/user/Gemfile.lock
 ```
@@ -482,7 +482,7 @@ And for pip3 packages:
 ```sh
 @ surepatch --action=show_platforms
 ```
-or 
+or
 ```sh
 @ surepatch --action=show_platforms --file=/home/user/platforms_report.txt
 ```
@@ -529,17 +529,22 @@ Fix vulnerabilities and than check changes like this
 ### Use CLI App with docker
 #### Example 1.
 Doing action via ./surepatch command
-1. Choose or create directory where will placed surepatch project
-2. Download surepatch into directory (from point 1) from github:
+1. Make sure that Docker is running
+2. Choose or create directory where will placed SurePatch project
+3. Go to the directory:
    ```sh
-   git clone https://github.com/wsbespalov/surepatchv2.git
+   cd <your_work_directory>
    ```
-3. Go to surepatch directory:
+4. Clone SurePatch from github:
    ```sh
-   cd surepatchv2
+   git clone https://github.com/WorkSecure/SurePatch-CLI
    ```
-4. Here we will use Dockerfile next format:
-```sh
+5. Go to SurePatch directory:
+   ```sh
+   cd SurePatch-CLI
+   ```
+6. Here we will use Dockerfile next format:
+ ```sh
 FROM ubuntu
 RUN apt-get update
 RUN apt-get install -y python3 python3-pip
@@ -547,65 +552,80 @@ RUN pip3 install --upgrade pip
 COPY . /surepatch
 WORKDIR /surepatch
 RUN pip3 install -r requirements.txt
-WORKDIR /surepatch/scripts
-RUN bash build_docker_ubuntu.sh
+WORKDIR /surepatch/build_scripts
+RUN bash build_ubuntu.sh
 WORKDIR /surepatch/dist
-
-RUN ./surepatch --team=myteam --user=iam.user@mail.com --password=test123 --action=show_platforms
+# SUREPATCH COMMANDS
+RUN ./surepatch_deb --team=<your_team> --user=<your_user_email> --password=<your_password> --action=show_platforms
+#
 CMD ["/bin/bash"]
 ```
 
-If you do not have a dockerfile, then create it and write in it the commands written above.
+If you do not have a Dockerfile, then create it and write in it the commands written above.
 
-If your Dockerfile is different, write in it the commands written above.
-
-Save changes, if it needs.
-
-#### Example 2.
-Doing action via python3 inside docker container
-1. Choose or create directory where will placed surepatch project
-2. Download surepatch into directory (from point 1) from github:
-   ```sh
-   git clone <REPOSITORY_GIT>
-   ```
-3. Go to surepatch directory:
-   ```sh
-   cd surepatchv2
-   ```
-4. In this example we will use Dockerfile next format:
-```sh
-FROM ubuntu
-RUN apt-get update
-RUN apt-get install -y python3 python3-pip
-RUN pip3 install --upgrade pip
-COPY . /surepatch
-WORKDIR /surepatch
-RUN pip3 install -r requirements.txt
-CMD ["/bin/bash"]
-```
-
-If you do not have a dockerfile, then create it and write in it the commands written above.
-
-If your Dockerfile is different, write in it the commands written above.
-
-Save changes, if it needs.
-
-5. Create docker image via docker build command:
+If your Dockerfile is different, write in it the commands written above. Save changes.
+7. Create image via docker build command:
    ```sh
    docker build -t <image name> .
    ```
-6. Run docker container:
+#### Example 2.
+Doing action via python3 inside docker container
+1. Make sure that Docker is running
+2. Choose or create directory where will placed SurePatch project
+3. Go to the directory:
+   ```sh
+   cd <your_work_directory>
+   ```
+4. Clone SurePatch from github:
+   ```sh
+   git clone https://github.com/WorkSecure/SurePatch-CLI
+   ```
+5. Go to SurePatch directory:
+   ```sh
+   cd SurePatch-CLI
+   ```
+6. In this example we will use Dockerfile next format:
+```sh
+FROM ubuntu
+RUN apt-get update
+RUN apt-get install -y python3 python3-pip
+RUN pip3 install --upgrade pip
+COPY . /surepatch
+WORKDIR /surepatch
+RUN pip3 install -r requirements.txt
+CMD ["/bin/bash"]
+```
+
+If you do not have a Dockerfile, then create it and write in it the commands written above.
+
+If your Dockerfile is different, write in it the commands written above. Save changes.
+7. Create image via docker build command:
+   ```sh
+   docker build -t <image name> .
+   ```
+8. Run docker container:
    ```sh
    docker run -it <image name>
    ```
-7. Run surepatch.py via python3:
+9. Run surepatch.py via python3:
    ```sh
-   ./surepatch.py --team=myteam iam.user@mail.com --password=test123 --action=show_platforms
+   ./surepatch.py --team=<your_team> --user=<your_user_email> --password=<your_password> --action=show_platforms
    ```
-8. Exit from container:
+10. Exit from container:
    ```sh
    exit
    ```
+### Use CLI App with Jenkins
+1. Make sure that Docker is running
+2. Change permissions for docker.sock file:
+   ```sh
+   sudo chmod 777 /var/run/docker.sock
+   ```
+3. Install Jenkins on your platform
+4. User account
+5. Create Job with pipeline:
+   
+
 # License
 ...
 # (c) BrainBankers, 2018.
