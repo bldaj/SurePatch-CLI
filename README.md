@@ -544,22 +544,22 @@ Doing action via ./surepatch command
    cd SurePatch-CLI
    ```
 6. Here we will use Dockerfile next format:
- ```sh
-FROM ubuntu
-RUN apt-get update
-RUN apt-get install -y python3 python3-pip
-RUN pip3 install --upgrade pip
-COPY . /surepatch
-WORKDIR /surepatch
-RUN pip3 install -r requirements.txt
-WORKDIR /surepatch/build_scripts
-RUN bash build_ubuntu.sh
-WORKDIR /surepatch/dist
-# SUREPATCH COMMANDS
-RUN ./surepatch_deb --team=<your_team> --user=<your_user_email> --password=<your_password> --action=show_platforms
-#
-CMD ["/bin/bash"]
-```
+   ```sh
+   FROM ubuntu
+   RUN apt-get update
+   RUN apt-get install -y python3 python3-pip
+   RUN pip3 install --upgrade pip
+   COPY . /surepatch
+   WORKDIR /surepatch
+   RUN pip3 install -r requirements.txt
+   WORKDIR /surepatch/build_scripts
+   RUN bash build_ubuntu.sh
+   WORKDIR /surepatch/dist
+   # SUREPATCH COMMANDS
+   RUN ./surepatch_deb --team=<your_team> --user=<your_user_email> --password=<your_password> --action=show_platforms
+   #
+   CMD ["/bin/bash"]
+   ```
 
 If you do not have a Dockerfile, then create it and write in it the commands written above.
 
@@ -585,16 +585,16 @@ Doing action via python3 inside docker container
    cd SurePatch-CLI
    ```
 6. In this example we will use Dockerfile next format:
-```sh
-FROM ubuntu
-RUN apt-get update
-RUN apt-get install -y python3 python3-pip
-RUN pip3 install --upgrade pip
-COPY . /surepatch
-WORKDIR /surepatch
-RUN pip3 install -r requirements.txt
-CMD ["/bin/bash"]
-```
+   ```sh
+   FROM ubuntu
+   RUN apt-get update
+   RUN apt-get install -y python3 python3-pip
+   RUN pip3 install --upgrade pip
+   COPY . /surepatch
+   WORKDIR /surepatch
+   RUN pip3 install -r requirements.txt
+   CMD ["/bin/bash"]
+   ```
 
 If you do not have a Dockerfile, then create it and write in it the commands written above.
 
@@ -624,7 +624,7 @@ If your Dockerfile is different, write in it the commands written above. Save ch
 3. Install Jenkins on your platform
 4. User account
 5. Create Job with pipeline:
-   
+
 
 # License
 ...
