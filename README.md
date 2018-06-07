@@ -527,10 +527,10 @@ Fix vulnerabilities and than check changes like this
 @ surepatch --platform=newtest --action=create_set --project=pyproject --target=[os,pip,req] --file=[no,no,/home/user/workspace/pythonproject/requirements.txt]
 ```
 ### Use CLI App with docker
-#### Example 1.
-Doing action via ./surepatch command
+#### Example.
+Doing action via ./surepatch.py inside docker container
 1. Make sure that Docker is running
-2. Choose or create directory where will placed SurePatch project
+2. Choose or create directory where will be placed SurePatch project
 3. Go to the directory:
    ```sh
    cd <your_work_directory>
@@ -543,57 +543,21 @@ Doing action via ./surepatch command
    ```sh
    cd SurePatch-CLI
    ```
-6. Here we will use Dockerfile next format:
+6. In this example we will use Dockerfile. You must fill the following parameters in the Dockerfile:
+- team
+- user
+- password
    ```sh
-   FROM ubuntu
-   RUN apt-get update
-   RUN apt-get install -y python3 python3-pip
-   RUN pip3 install --upgrade pip
-   COPY . /surepatch
-   WORKDIR /surepatch
-   RUN pip3 install -r requirements.txt
-   WORKDIR /surepatch/build_scripts
-   RUN bash build_ubuntu.sh
-   WORKDIR /surepatch/dist
-   # SUREPATCH COMMANDS
-   RUN ./surepatch_deb --team=<your_team> --user=<your_user_email> --password=<your_password> --action=show_platforms
-   #
-   CMD ["/bin/bash"]
-   ```
-
-If you do not have a Dockerfile, then create it and write in it the commands written above.
-Save changes.
-
-7. Create image via docker build command:
-   ```sh
-   docker build -t <image name> .
-   ```
-#### Example 2.
-Doing action via python3 inside docker container
-1. Make sure that Docker is running
-2. Choose or create directory where will placed SurePatch project
-3. Go to the directory:
-   ```sh
-   cd <your_work_directory>
-   ```
-4. Clone SurePatch from github:
-   ```sh
-   git clone https://github.com/WorkSecure/SurePatch-CLI
-   ```
-5. Go to SurePatch directory:
-   ```sh
-   cd SurePatch-CLI
-   ```
-6. In this example we will use Dockerfile next format:
-   ```sh
-   FROM ubuntu
-   RUN apt-get update
-   RUN apt-get install -y python3 python3-pip
-   RUN pip3 install --upgrade pip
-   COPY . /surepatch
-   WORKDIR /surepatch
-   RUN pip3 install -r requirements.txt
-   CMD ["/bin/bash"]
+    FROM ubuntu
+    RUN apt-get update
+    RUN apt-get install -y python3 python3-pip
+    RUN pip3 install --upgrade pip
+    COPY . /surepatch
+    WORKDIR /surepatch
+    RUN pip3 install -r requirements.txt
+    RUN chmod +x surepatch.py
+    RUN python3 surepatch.py --action=save_config --team=<team> --user=<email> --password=<password>
+    CMD ["/bin/bash"]
    ```
 
 If you do not have a Dockerfile, then create it and write in it the commands written above.
@@ -607,16 +571,18 @@ Save changes.
    ```sh
    docker run -it <image name>
    ```
-9. Run surepatch.py via python3:
+9. Run surepatch.py:
    ```sh
-   ./surepatch.py --team=<your_team> --user=<your_user_email> --password=<your_password> --action=show_platforms
+   ./surepatch.py --action=<action> --server=<server_name>
    ```
 10. Exit from container:
    ```sh
    exit
    ```
 ### Use CLI App with Jenkins
-This example based on working in Linux Manjaro
+If you want to use Jenkinsfile and Dockerfile from example, copy Jenkinsfile and Dockerfile from directory build_scripts/Linux Manjaro to root of project.
+
+#### Example for Linux Manjaro
 1. Install Jenkins from package manager Octopi:
 2. Make sure that Docker is running:
    ```sh
@@ -683,6 +649,55 @@ Save the Dockerfile in root of project.
 13. Input name of job and choose Pipeline type and press OK.
 14. In section Pipeline in Definition select Pipeline script from SCM. In SCM field select git and specify Repository URL. After this press Save.
 15. Now press button Build Now from left . You will see new build in Build History where you can look at Console Output of build.
+
+Result of Jenkins work
+   ```sh
+   Started by user <your_username>
+   Obtained Jenkinsfile from git <repository_url>
+   ...
+   [test surepatch] Running shell script
+   + docker build -t 8821a26d25a6a51a13e94fe1fe068d93d4d5a59c -f Dockerfile .
+   Sending build context to Docker daemon  37.44MB
+
+   Step 1/12 : FROM ubuntu
+   Step 2/12 : RUN apt-get update
+   Step 3/12 : RUN apt-get install -y python3 python3-pip
+   Step 4/12 : RUN pip3 install --upgrade pip
+   Step 5/12 : COPY . /surepatch
+   Step 6/12 : WORKDIR /surepatch
+   Step 7/12 : RUN pip3 install -r requirements.txt
+   # Installing requirements
+   Step 8/12 : WORKDIR /surepatch/build_scripts
+   Step 9/12 : RUN bash build_ubuntu.sh
+   Start build...................
+   Step 10/12 : WORKDIR /surepatch/dist
+   Step 11/12 : RUN ./surepatch_deb --team=<your_team> --user=<your_user_email> --password=<your_password> --action=show_platforms
+   Login success.
+   Platforms:
+  +Platforms----+------------------------+
+  | Name        | Description            |
+  +-------------+------------------------+
+  | wintest     | wintestPlatform        |
+  | mactest     | mactestPlatform        |
+  | mactest2    | mactest2Platform       |
+  | mfa         | mfa                    |
+  | docker_test | Tests for Docker Usage |
+  +-------------+------------------------+
+  Complete successfully with targets ['']
+  Process 0 components
+  Step 12/12 : CMD ["/bin/bash"]
+  ...
+  [Pipeline] {
+  [Pipeline] stage
+  [Pipeline] { (Test)
+  [Pipeline] echo
+  Complete work
+  [Pipeline] }
+  [Pipeline] // stage
+  [Pipeline] }
+  ...
+  Finished: SUCCESS
+  ```
 # License
 ...
 # (c) BrainBankers, 2018.
